@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width">
+<title>class Vector extends Array </title>
+<link rel="stylesheet" type="text/css" href="">
+<style type="text/css">
+
+</style>
+<script type="text/javascript">
+class Vector extends Array {
+	constructor(...args) {
+		let v = args 
+		if(Array.isArray(args[0])) v = args[0]
+		super(...v)
+		this._setxyz()
+	}
+	_setxyz() {
+		this.x = this[0]
+		this.y = this[1]
+		if(this[2]!==undefined) this.z = this[2] 
+		if(this[3]!==undefined) this.w = this[3]		
+	}
+	set x(v) {this._x = v,this[0] = v}
+	set y(v) {this._y = v,this[1] = v}
+	set z(v) {this._z = v,this[2] = v}
+	set w(v) {this._w = v,this[3] = v}
+	get x() { return this._x}
+	get y() { return this._y}
+	get z() { return this._z}
+	get w() { return this._w}
+//retrun new vector
+	get xy() { return new Vector(this[0],this[1])}
+	get yx() { return new Vector(this[1],this[0])}
+	get xz() { return new Vector(this[0],this[2])}
+	get zx() { return new Vector(this[2],this[0])}
+	get yz() { return new Vector(this[1],this[2])}
+	get zy() { return new Vector(this[2],this[1])}
+	get xyz() { return new Vector(this[0],this[1],this[2])}
+	get xzy() { return new Vector(this[0],this[2],this[1])}
+	get yxz() { return new Vector(this[1],this[0],this[2])}
+	get yzx() { return new Vector(this[1],this[2],this[0])}
+	get zxy() { return new Vector(this[2],this[0],this[1])}
+	get zyx() { return new Vector(this[2],this[1],this[0])}
+
+	cross(vec) {
+		if(this.length!=3 || vec.length!=3 ) throw -1 
+		let r = [
+			this[1]*vec[2] - this[2] * vec[1],
+			this[2]*vec[0] - this[0] * vec[2],
+			this[0]*vec[1] - this[1] * vec[0] 
+			]
+		return new Vector(r) 
+	}
+//return self
+	invert() {
+		this.forEach((v,i)=>this[i]=-v)
+		this._setxyz()	
+		return this	
+	}
+	add(vec) {
+		if(this.length!=vec.length) throw -1
+		vec.forEach((v,i)=>this[i]+=v)
+		this._setxyz()
+		return this	
+	}
+	sub(vec) {
+		vec.forEach((v,i)=>this[i]-=v)
+		this._setxyz()
+		return this	
+	}
+	mult(s) {
+		this.forEach((v,i)=>this[i]=v*s)
+		this._setxyz()	
+		return this		
+	}
+	normalize() {
+		let l = this.hypot() 
+		this.forEach((v,i)=>this[i]=(l!=0)?v/l:0)
+		this._setxyz()
+		return this	
+	}
+
+//return float
+	dot(vec) {
+		return this.reduce((a,v,i)=>a+=v*vec[i],0)
+	}
+	distance(vec) {
+		let v = new Vector(...this)
+		v.sub(vec)
+		return v.hypot()
+	}
+	hypot() {
+		return Math.hypot(...this)
+	}
+// return bool
+	equal(vec) {
+		return this.reduce((a,v,i)=>a && v===vec[i],true)
+	}
+
+}
+onload = function() {
+	const temp = new Vector(1,2,3,4)
+	const temp3 = new Vector(1,2,3)
+	function set(){temp.forEach((v,i)=>s[i]=v)}
+	const testset = [
+		["constructor 2d",()=>new Vector(1,2),[1,2]],
+		["constructor 3d",()=>new Vector(1,2,3),[1,2,3]],
+		["constructor 4d",()=>new Vector(1,2,3,4),[1,2,3,4]],
+		["constructor from array 3d",()=>new Vector([1,2,3]),[1,2,3]],
+		["constructor from vector 4d",()=>new Vector(temp),[1,2,3,4]],
+		["get x",()=>new Vector(1,2).x,1],
+		["get y",()=>new Vector(1,2).y,2],
+		["get z",()=>new Vector(1,2,3).z,3],
+		["get w",()=>new Vector(1,2,3,4).w,4],
+		["get xy",()=>(temp.xy),[1,2]],
+		["get xz",()=>(temp.xz),[1,3]],
+		["get yz",()=>(temp.yz),[2,3]],
+		["get yx",()=>(temp.yx),[2,1]],
+		["get zy",()=>(temp.zy),[3,2]],
+		["get zx",()=>(temp.zx),[3,1]],
+		["get xyz",()=>(temp.xyz),[1,2,3]],	
+		["get xzy",()=>(temp.xzy),[1,3,2]],	
+		["get yxz",()=>(temp.yxz),[2,1,3]],	
+		["get yzx",()=>(temp.yzx),[2,3,1]],	
+		["get zxy",()=>(temp.zxy),[3,1,2]],	
+		["get zyx",()=>(temp.zyx),[3,2,1]],	
+
+		["set x",()=>{let s=new Vector(temp);s.x = 10;return s},[10,2,3,4]],
+		["set y",()=>(s=new Vector(temp),s.y = 11,s),[1,11,3,4]],
+		["set z",()=>(s=new Vector(temp),s.z = 12,s),[1,2,12,4]],
+		["set w",()=>(s=new Vector(temp),s.w = 13,s),[1,2,3,13]],
+	
+		["invert ",()=>new Vector([1,2,3,4]).invert(),[-1,-2,-3,-4]],
+		
+		["add ",()=>new Vector([1,2,3,4]).add([10,20,30,40]),[11,22,33,44]],
+		["add exception",()=>new Vector([1,2,3]).add([10,20,30,40]),null],
+		["sub ",()=>new Vector([1,2,3,4]).sub([10,20,30,40]),[-9,-18,-27,-36]],
+		["cross",()=>new Vector([1,0,0]).cross([0,1,0]),[0,0,1]],
+		["cross",()=>new Vector([0,1,0]).cross([1,0,0]),[0,0,-1]],
+		["cross exception",()=>new Vector([0,1,0]).cross([1,0,0,0]),null],
+		["mult ",()=>new Vector([1,2,3,4]).mult(2),[2,4,6,8]],
+		["normalize ",()=>new Vector([1,2,3]).normalize(),
+			(l=Math.hypot(1,2,3),[1/l,2/l,3/l])],		
+		["normalize ",()=>new Vector([0,0,0]).normalize(),
+			[0,0,0]],				
+		["dot ",()=>temp3.dot([4,5,6]),1*4+2*5+3*6],
+		["distance",()=>temp3.distance([4,5,6]),Math.hypot(1-4,2-5,3-6)],
+		["hypot",()=>temp3.hypot(),Math.sqrt(1*1+2*2+3*3)],
+		["equal ",()=>temp3.equal([1,2,3]),true],
+		["not equal",()=>temp3.equal([1,3,5]),false],
+	]
+	function diff(a,b) {
+		if(Array.isArray(b)) {
+			if(!Array.isArray(a)) return false 
+			if(a.length!=b.length) return false 
+			return a.reduce((acc,v,i)=>acc && v===b[i],true )
+		} else {
+			return a===b 
+		}
+	}
+	let result = [] 
+	testset.forEach(t=>{
+		let target = t[1]
+		if(typeof target=="function") {
+			try {
+				target = target()
+			} catch(e) {
+				if(t[2]===null) result.push(`OK "${t[0]}" return exception ${e}`)
+				else result.push(`NG "${t[0]}"  return exception ${e}`)
+				return 
+			} 
+		}
+		if(diff(target,t[2])) result.push(`OK "${t[0]}" result ${target}`)
+		else result.push(`NG "${t[0]}" return ${target} expected ${t[2]}`)
+	})
+	document.getElementById("result").innerHTML = result.join("<br/>")
+}
+</script>
+</head>
+<body>
+<h1>class Vector extends Array </h1>
+<h2>methods</h2>
+<ul>
+	<li>constructor Vector(s1,s2...)</li>
+	<li>constructor Vector(array)</li>
+	<li>Setter .x, .y, .z, .w </li>
+	<li>Getter [n], .x, .y, .z, .w, .xy, .xz, .yx, .yz, .zx, .zy, .xyz, .xzy, .yxz, .yzx, .zxy, .zyx</li>
+	<li>(return self) add(Vector )</li>
+	<li>(return self) sub(Vector )</li>
+	<li>(return self) invert()</li>
+	<li>(return self) mult(float )</li>
+	<li>(return self) normalize()</li>
+	<li>Vector cross(Vector )</li>
+	<li>float dot(Vector )</li>
+	<li>float distance(Vector )</li>
+	<li>float hypot()</li>
+	<li>bool equal(Vector )</li>
+</ul>
+<h2>tests</h2>
+<div id=result></div>
+</body>
+</html>
