@@ -8,98 +8,8 @@
 <style type="text/css">
 
 </style>
+<script type="text/javascript" src="Vector.js"></script>
 <script type="text/javascript">
-class Vector extends Array {
-	constructor(...args) {
-		let v = args 
-		if(Array.isArray(args[0])) v = args[0]
-		super(...v)
-		this._setxyz()
-	}
-	_setxyz() {
-		this.x = this[0]
-		this.y = this[1]
-		if(this[2]!==undefined) this.z = this[2] 
-		if(this[3]!==undefined) this.w = this[3]		
-	}
-	set x(v) {this._x = v,this[0] = v}
-	set y(v) {this._y = v,this[1] = v}
-	set z(v) {this._z = v,this[2] = v}
-	set w(v) {this._w = v,this[3] = v}
-	get x() { return this._x}
-	get y() { return this._y}
-	get z() { return this._z}
-	get w() { return this._w}
-//retrun new vector
-	get xy() { return new Vector(this[0],this[1])}
-	get yx() { return new Vector(this[1],this[0])}
-	get xz() { return new Vector(this[0],this[2])}
-	get zx() { return new Vector(this[2],this[0])}
-	get yz() { return new Vector(this[1],this[2])}
-	get zy() { return new Vector(this[2],this[1])}
-	get xyz() { return new Vector(this[0],this[1],this[2])}
-	get xzy() { return new Vector(this[0],this[2],this[1])}
-	get yxz() { return new Vector(this[1],this[0],this[2])}
-	get yzx() { return new Vector(this[1],this[2],this[0])}
-	get zxy() { return new Vector(this[2],this[0],this[1])}
-	get zyx() { return new Vector(this[2],this[1],this[0])}
-
-	cross(vec) {
-		if(this.length!=3 || vec.length!=3 ) throw -1 
-		let r = [
-			this[1]*vec[2] - this[2] * vec[1],
-			this[2]*vec[0] - this[0] * vec[2],
-			this[0]*vec[1] - this[1] * vec[0] 
-			]
-		return new Vector(r) 
-	}
-//return self
-	invert() {
-		this.forEach((v,i)=>this[i]=-v)
-		this._setxyz()	
-		return this	
-	}
-	add(vec) {
-		if(this.length!=vec.length) throw -1
-		vec.forEach((v,i)=>this[i]+=v)
-		this._setxyz()
-		return this	
-	}
-	sub(vec) {
-		vec.forEach((v,i)=>this[i]-=v)
-		this._setxyz()
-		return this	
-	}
-	mult(s) {
-		this.forEach((v,i)=>this[i]=v*s)
-		this._setxyz()	
-		return this		
-	}
-	normalize() {
-		let l = this.hypot() 
-		this.forEach((v,i)=>this[i]=(l!=0)?v/l:0)
-		this._setxyz()
-		return this	
-	}
-
-//return float
-	dot(vec) {
-		return this.reduce((a,v,i)=>a+=v*vec[i],0)
-	}
-	distance(vec) {
-		let v = new Vector(...this)
-		v.sub(vec)
-		return v.hypot()
-	}
-	hypot() {
-		return Math.hypot(...this)
-	}
-// return bool
-	equal(vec) {
-		return this.reduce((a,v,i)=>a && v===vec[i],true)
-	}
-
-}
 onload = function() {
 	const temp = new Vector(1,2,3,4)
 	const temp3 = new Vector(1,2,3)
@@ -110,54 +20,77 @@ onload = function() {
 		["constructor 4d",()=>new Vector(1,2,3,4),[1,2,3,4]],
 		["constructor from array 3d",()=>new Vector([1,2,3]),[1,2,3]],
 		["constructor from vector 4d",()=>new Vector(temp),[1,2,3,4]],
-		["get x",()=>new Vector(1,2).x,1],
-		["get y",()=>new Vector(1,2).y,2],
-		["get z",()=>new Vector(1,2,3).z,3],
-		["get w",()=>new Vector(1,2,3,4).w,4],
-		["get xy",()=>(temp.xy),[1,2]],
-		["get xz",()=>(temp.xz),[1,3]],
-		["get yz",()=>(temp.yz),[2,3]],
-		["get yx",()=>(temp.yx),[2,1]],
-		["get zy",()=>(temp.zy),[3,2]],
-		["get zx",()=>(temp.zx),[3,1]],
-		["get xyz",()=>(temp.xyz),[1,2,3]],	
-		["get xzy",()=>(temp.xzy),[1,3,2]],	
-		["get yxz",()=>(temp.yxz),[2,1,3]],	
-		["get yzx",()=>(temp.yzx),[2,3,1]],	
-		["get zxy",()=>(temp.zxy),[3,1,2]],	
-		["get zyx",()=>(temp.zyx),[3,2,1]],	
+		["get x from [1,2]",()=>new Vector(1,2).x,1],
+		["get y from [1,2]",()=>new Vector(1,2).y,2],
+		["get z from [1,2,3]",()=>new Vector(1,2,3).z,3],
+		["get w from [1,2,3,4]",()=>new Vector(1,2,3,4).w,4],
+		["get r from [1,2]",()=>new Vector(1,2).r,1],
+		["get g from [1,2]",()=>new Vector(1,2).g,2],
+		["get b from [1,2,3]",()=>new Vector(1,2,3).b,3],
+		["get a from [1,2,3,4]",()=>new Vector(1,2,3,4).a,4],
+		["get xy from [1,2,3,4]",()=>(temp.xy),[1,2]],
+		["get xz from [1,2,3,4]",()=>(temp.xz),[1,3]],
+		["get yz from [1,2,3,4]",()=>(temp.yz),[2,3]],
+		["get yx from [1,2,3,4]",()=>(temp.yx),[2,1]],
+		["get zy from [1,2,3,4]",()=>(temp.zy),[3,2]],
+		["get zx from [1,2,3,4]",()=>(temp.zx),[3,1]],
+		["get xyz from [1,2,3,4]",()=>(temp.xyz),[1,2,3]],	
+		["get xzy from [1,2,3,4]",()=>(temp.xzy),[1,3,2]],	
+		["get yxz from [1,2,3,4]",()=>(temp.yxz),[2,1,3]],	
+		["get yzx from [1,2,3,4]",()=>(temp.yzx),[2,3,1]],	
+		["get zxy from [1,2,3,4]",()=>(temp.zxy),[3,1,2]],	
+		["get zyx from [1,2,3,4]",()=>(temp.zyx),[3,2,1]],	
 
-		["set x",()=>{let s=new Vector(temp);s.x = 10;return s},[10,2,3,4]],
-		["set y",()=>(s=new Vector(temp),s.y = 11,s),[1,11,3,4]],
-		["set z",()=>(s=new Vector(temp),s.z = 12,s),[1,2,12,4]],
-		["set w",()=>(s=new Vector(temp),s.w = 13,s),[1,2,3,13]],
+		["set x to [1,2,3,4]",()=>{let s=new Vector(temp);s.x = 10;return s},[10,2,3,4]],
+		["set y to [1,2,3,4]",()=>(s=new Vector(temp),s.y = 11,s),[1,11,3,4]],
+		["set z to [1,2,3,4]",()=>(s=new Vector(temp),s.z = 12,s),[1,2,12,4]],
+		["set w to [1,2,3,4]",()=>(s=new Vector(temp),s.w = 13,s),[1,2,3,13]],
+		["set r to [1,2,3,4]",()=>{let s=new Vector(temp);s.r = 10;return s},[10,2,3,4]],
+		["set g to [1,2,3,4]",()=>(s=new Vector(temp),s.g = 11,s),[1,11,3,4]],
+		["set b to [1,2,3,4]",()=>(s=new Vector(temp),s.b = 12,s),[1,2,12,4]],
+		["set a to [1,2,3,4]",()=>(s=new Vector(temp),s.a = 13,s),[1,2,3,13]],
 	
-		["invert ",()=>new Vector([1,2,3,4]).invert(),[-1,-2,-3,-4]],
-		
-		["add ",()=>new Vector([1,2,3,4]).add([10,20,30,40]),[11,22,33,44]],
+		["invert [1,2,3,4]",()=>new Vector([1,2,3,4]).invert(),[-1,-2,-3,-4]],		
+		["add [10,20,30,40] to [1,2,3,4]",()=>new Vector([1,2,3,4]).add([10,20,30,40]),[11,22,33,44]],
+		["add scalar 10  to [1,2,3,4]",()=>new Vector([1,2,3,4]).add(10),[11,12,13,14]],
 		["add exception",()=>new Vector([1,2,3]).add([10,20,30,40]),null],
 		["sub ",()=>new Vector([1,2,3,4]).sub([10,20,30,40]),[-9,-18,-27,-36]],
-		["cross",()=>new Vector([1,0,0]).cross([0,1,0]),[0,0,1]],
-		["cross",()=>new Vector([0,1,0]).cross([1,0,0]),[0,0,-1]],
+		["sub scalar",()=>new Vector([1,2,3,4]).sub([10,20,30,40]),[-9,-18,-27,-36]],
+		["cross [1,0,0] [0,1,0]",()=>new Vector([1,0,0]).cross([0,1,0]),[0,0,1]],
+		["cross [0,1,0] [1,0,0]",()=>new Vector([0,1,0]).cross([1,0,0]),[0,0,-1]],
 		["cross exception",()=>new Vector([0,1,0]).cross([1,0,0,0]),null],
-		["mult ",()=>new Vector([1,2,3,4]).mult(2),[2,4,6,8]],
-		["normalize ",()=>new Vector([1,2,3]).normalize(),
+		["mult vector",()=>new Vector([1,2,3,4]).mult([2,2,2,2]),[2,4,6,8]],
+		["mult scalar",()=>new Vector([1,2,3,4]).mult(2),[2,4,6,8]],
+		["normalize [1,2,3]",()=>new Vector([1,2,3]).normalize(),
 			(l=Math.hypot(1,2,3),[1/l,2/l,3/l])],		
-		["normalize ",()=>new Vector([0,0,0]).normalize(),
-			[0,0,0]],				
-		["dot ",()=>temp3.dot([4,5,6]),1*4+2*5+3*6],
-		["distance",()=>temp3.distance([4,5,6]),Math.hypot(1-4,2-5,3-6)],
-		["hypot",()=>temp3.hypot(),Math.sqrt(1*1+2*2+3*3)],
+		["normalize [0,0,0]",()=>new Vector([0,0,0]).normalize(),
+			[0,0,0]],
+		["mix [1,2] [2,1] by 0.2",()=>new Vector([1,2]).mix([2,1],0.2),[1*0.8+2*0.2,2*0.8+1*0.2]],
+		["floor [1.1,2.2,-3.3]",()=>new Vector([1.1,2.2,-3.3]).floor(),[1,2,-4]],	
+		["ceil [1.1,2.2,-3.3]",()=>new Vector([1.1,2.2,-3.3]).ceil(),[2,3,-3]],	
+		["fract [1.1,2.2,-3.3]",()=>new Vector([1.1,2.2,-3.3]).fract(),[0.1,0.2,0.7]],	
+		["mod [1,3,8] % 3",()=>new Vector([1,3,8]).mod(3),[1,0,2]],	
+		["min vector",()=>new Vector(1,2,3).min([2,2,2]),[1,2,2]],	
+		["min scalar",()=>new Vector(1,2,3).min(2),[1,2,2]],	
+		["max vector",()=>new Vector(1,2,3).max([2,2,2]),[2,2,3]],	
+		["max scalar",()=>new Vector(1,2,3).max(2),[2,2,3]],	
+		["clamp [0.5,1.3,-0.5] to [0,1]",()=>new Vector([0.5,1.3,-0.5]).clamp(0,1),[0.5,1,0]],
+		["step [1,2,3] by 2",()=>new Vector(1,2,3).step(2),[0,1,1]],
+
+		["dot [1,2,3] [4,5,6]",()=>temp3.dot([4,5,6]),1*4+2*5+3*6],
+		["distance [1,2,3] [4,5,6]",()=>temp3.distance([4,5,6]),Math.hypot(1-4,2-5,3-6)],
+		["hypot [1,2,3]",()=>temp3.hypot(),Math.sqrt(1*1+2*2+3*3)],
 		["equal ",()=>temp3.equal([1,2,3]),true],
 		["not equal",()=>temp3.equal([1,3,5]),false],
 	]
 	function diff(a,b) {
+		const eps = 0.000000000000001
 		if(Array.isArray(b)) {
 			if(!Array.isArray(a)) return false 
 			if(a.length!=b.length) return false 
-			return a.reduce((acc,v,i)=>acc && v===b[i],true )
+			return a.reduce((acc,v,i)=>acc && Math.abs(v-b[i])<eps,true )
 		} else {
-			return a===b 
+			return (typeof a=="number")?Math.abs(a-b)<eps : a===b 
 		}
 	}
 	let result = [] 
@@ -176,6 +109,10 @@ onload = function() {
 		else result.push(`NG "${t[0]}" return ${target} expected ${t[2]}`)
 	})
 	document.getElementById("result").innerHTML = result.join("<br/>")
+	
+	let a = new Vector(1.1,1.2,1.3,1.4)
+	let b = new Float32Array(a) 
+	console.log(b)
 }
 </script>
 </head>
@@ -185,17 +122,31 @@ onload = function() {
 <ul>
 	<li>constructor Vector(s1,s2...)</li>
 	<li>constructor Vector(array)</li>
-	<li>Setter .x, .y, .z, .w </li>
-	<li>Getter [n], .x, .y, .z, .w, .xy, .xz, .yx, .yz, .zx, .zy, .xyz, .xzy, .yxz, .yzx, .zxy, .zyx</li>
-	<li>(return self) add(Vector )</li>
-	<li>(return self) sub(Vector )</li>
-	<li>(return self) invert()</li>
-	<li>(return self) mult(float )</li>
-	<li>(return self) normalize()</li>
+	<li>Setter .x, .y, .z, .w, .r, .g, .b, .a, </li>
+	<li>Getter [n], .x, .y, .z, .w, .r, .g, .b, .a, .xy, .xz, .yx, .yz, .zx, .zy, .xyz, .xzy, .yxz, .yzx, .zxy, .zyx</li>
+	<li>Vector add(Vector )</li>
+	<li>Vector add(number )</li>
+	<li>Vector sub(Vector )</li>
+	<li>Vector sub(number )</li>
+	<li>Vector invert()</li>
+	<li>Vector mult(Vector )</li>
+	<li>Vector mult(number )</li>
+	<li>Vector normalize()</li>
 	<li>Vector cross(Vector )</li>
-	<li>float dot(Vector )</li>
-	<li>float distance(Vector )</li>
-	<li>float hypot()</li>
+	<li>Vector mix(Vector, ratio)</li>
+	<li>Vector floor()</li>
+	<li>Vector ceil()</li>
+	<li>Vector fract()</li>
+	<li>Vector mod(number )</li>
+	<li>Vector min(vector )</li>
+	<li>Vector min(number )</li>
+	<li>Vector max(vector )</li>
+	<li>Vector max(number )</li>
+	<li>Vector clamp(number min, number max)</li>
+	<li>Vector step(number th)</li>
+	<li>number dot(Vector )</li>
+	<li>number distance(Vector )</li>
+	<li>number hypot()</li>
 	<li>bool equal(Vector )</li>
 </ul>
 <h2>tests</h2>
